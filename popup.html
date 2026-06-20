@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Security Auditor</title>
+    <link rel="stylesheet" href="styles/popup.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Browser Security Auditor</p>
+          <h1 id="pageTitle">Current page</h1>
+        </div>
+        <button id="optionsButton" class="icon-button" type="button" title="Settings" aria-label="Settings">⚙</button>
+      </header>
+
+      <section class="score-panel" id="scorePanel">
+        <div class="score-ring" id="scoreRing">
+          <span id="riskScore">--</span>
+        </div>
+        <div class="score-copy">
+          <span class="severity-pill" id="severity">Waiting</span>
+          <p id="summary">Scanning this page...</p>
+        </div>
+      </section>
+
+      <section class="assistant-panel">
+        <h2>Security Assistant</h2>
+        <p id="aiSummary">A plain-language summary will appear after the scan completes.</p>
+      </section>
+
+      <section class="category-strip" aria-label="Threat categories">
+        <div>
+          <strong id="phishingCount">0</strong>
+          <span>Phishing</span>
+        </div>
+        <div>
+          <strong id="privacyCount">0</strong>
+          <span>Privacy</span>
+        </div>
+        <div>
+          <strong id="malwareCount">0</strong>
+          <span>Scripts</span>
+        </div>
+        <div>
+          <strong id="dataCount">0</strong>
+          <span>Data</span>
+        </div>
+      </section>
+
+      <div class="toolbar">
+        <button id="rescanButton" class="primary-button" type="button">Rescan</button>
+        <button id="exportButton" class="secondary-button" type="button">Export</button>
+      </div>
+
+      <section class="content-section">
+        <div class="section-heading">
+          <h2>Findings</h2>
+          <span id="findingCount">0</span>
+        </div>
+        <div id="findingsList" class="list empty">No findings yet.</div>
+      </section>
+
+      <section class="content-section">
+        <div class="section-heading">
+          <h2>Recommendations</h2>
+        </div>
+        <div id="recommendationsList" class="list empty">Recommendations will appear here.</div>
+      </section>
+
+      <section class="content-section">
+        <div class="section-heading">
+          <h2>Recent Reports</h2>
+          <button id="clearButton" class="text-button" type="button">Clear</button>
+        </div>
+        <div id="historyList" class="history-list empty">No saved reports.</div>
+      </section>
+    </main>
+    <script src="src/popup.js"></script>
+  </body>
+</html>

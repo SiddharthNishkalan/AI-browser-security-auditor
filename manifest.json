@@ -1,0 +1,54 @@
+{
+  "manifest_version": 3,
+  "name": "AI-Powered Browser Security Auditor",
+  "description": "Continuously scans visited pages for phishing, trackers, fingerprinting, suspicious forms, redirects, and risky behavior.",
+  "version": "1.0.0",
+  "minimum_chrome_version": "114",
+  "permissions": [
+    "activeTab",
+    "alarms",
+    "downloads",
+    "scripting",
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*",
+    "https://api.openai.com/*",
+    "https://generativelanguage.googleapis.com/*"
+  ],
+  "background": {
+    "service_worker": "src/background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "src/contentScript.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "src/pageHooks.js"
+      ],
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ]
+    }
+  ],
+  "action": {
+    "default_title": "Security Auditor",
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html"
+}
