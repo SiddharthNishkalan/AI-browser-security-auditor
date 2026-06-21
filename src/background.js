@@ -23,6 +23,13 @@ chrome.tabs.onRemoved.addListener((tabId) => {
   runtimeEventsByTab.delete(tabId);
 });
 
+chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
+  if (changeInfo.url) {
+    latestReportsByTab.delete(tabId);
+    runtimeEventsByTab.delete(tabId);
+  }
+});
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   handleMessage(message, sender).then(sendResponse).catch((error) => {
     sendResponse({ ok: false, error: error.message || "Unexpected error" });
@@ -55,14 +62,17 @@ async function handleMessage(message, sender) {
   if (message?.type === "GET_CURRENT_REPORT") {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!tab?.id) return { ok: true, report: null };
-    const report = latestReportsByTab.get(tab.id) || await findReportForUrl(tab.url);
+    if (!isSupportedUrl(tab.url)) return { ok: true, report: null, tabUrl: tab.url, supported: false };
+    const cached = latestReportsByTab.get(tab.id);
+    const report = cached?.url === tab.url ? cached : await findReportForUrl(tab.url);
     if (!report) chrome.tabs.sendMessage(tab.id, { type: "SCAN_NOW" }).catch(() => undefined);
-    return { ok: true, report: report || null, tabUrl: tab.url };
+    return { ok: true, report: report || null, tabUrl: tab.url, supported: true };
   }
 
   if (message?.type === "RESCAN_CURRENT_TAB") {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (tab?.id) await chrome.tabs.sendMessage(tab.id, { type: "SCAN_NOW" });
+    if (!tab?.id || !isSupportedUrl(tab.url)) return { ok: false, error: "This page cannot be scanned." };
+    await chrome.tabs.sendMessage(tab.id, { type: "SCAN_NOW" });
     return { ok: true };
   }
 
@@ -158,4 +168,8 @@ function defaultSettings() {
     model: "gpt-4.1-mini",
     apiKey: ""
   };
+}
+
+function isSupportedUrl(url = "") {
+  return url.startsWith("http://") || url.startsWith("https://");
 }

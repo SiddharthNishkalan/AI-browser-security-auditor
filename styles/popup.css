@@ -290,7 +290,6 @@ h2 {
   border-color: #9ed5bd;
 }
 
-.risk-low .severity-pill,
 .risk-low .finding-severity {
   color: var(--green);
 }
@@ -299,7 +298,6 @@ h2 {
   border-color: #e6c47d;
 }
 
-.risk-medium .severity-pill,
 .risk-medium .finding-severity {
   color: var(--amber);
 }
@@ -308,7 +306,6 @@ h2 {
   border-color: #e4948e;
 }
 
-.risk-high .severity-pill,
 .risk-high .finding-severity {
   color: var(--red);
 }
@@ -317,7 +314,6 @@ h2 {
   border-color: #cf6f8d;
 }
 
-.risk-critical .severity-pill,
 .risk-critical .finding-severity {
   color: var(--critical);
 }

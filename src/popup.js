@@ -36,6 +36,10 @@ async function init() {
 
 async function loadCurrentReport() {
   const response = await chrome.runtime.sendMessage({ type: "GET_CURRENT_REPORT" });
+  if (response.supported === false) {
+    renderUnsupported(response.tabUrl);
+    return;
+  }
   currentReport = response.report;
   if (!currentReport) {
     renderLoading(response.tabUrl);
@@ -86,6 +90,22 @@ function renderLoading(tabUrl) {
   els.summary.textContent = "Scanning this page...";
   els.aiSummary.textContent = "A plain-language summary will appear after the scan completes.";
   setRiskState("waiting", 0);
+}
+
+function renderUnsupported(tabUrl) {
+  els.pageTitle.textContent = titleFromUrl(tabUrl) || "Browser page";
+  els.riskScore.textContent = "--";
+  els.severity.textContent = "Unavailable";
+  els.summary.textContent = "Chrome blocks extensions from scanning this type of page.";
+  els.aiSummary.textContent = "Open an HTTP or HTTPS website to run a security scan.";
+  els.phishingCount.textContent = 0;
+  els.privacyCount.textContent = 0;
+  els.malwareCount.textContent = 0;
+  els.dataCount.textContent = 0;
+  els.findingCount.textContent = 0;
+  setRiskState("waiting", 0);
+  renderFindings([]);
+  renderRecommendations(["Visit a regular website, then open the extension again."]);
 }
 
 function renderReport(report) {
@@ -170,9 +190,9 @@ function renderHistory(items) {
       </div>
       <p class="history-url"></p>
     `;
-    node.querySelector(".history-title").textContent = `${item.riskScore}/100 · ${item.title || titleFromUrl(item.url)}`;
+    node.querySelector(".history-title").textContent = `${item.riskScore}/100 - ${item.title || titleFromUrl(item.url)}`;
     node.querySelector(".finding-severity").textContent = item.severity;
-    node.querySelector(".history-url").textContent = new URL(item.url).hostname;
+    node.querySelector(".history-url").textContent = titleFromUrl(item.url) || item.url || "Unknown page";
     node.addEventListener("click", () => renderReport(item));
     return node;
   }));
